@@ -3,7 +3,7 @@
 
 void setup() {
   // 初始化串口通信
-  Serial.begin(115200);
+  Serial.begin(9600);
   // 初始化板载LED引脚为输出模式
   pinMode(LED_PIN, OUTPUT);
 }
