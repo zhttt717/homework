@@ -1,17 +1,34 @@
-// 定义板载LED引脚，避免使用"魔法数字"
-#define LED_PIN 2
+// 定义两个外部LED的引脚 (分别接 D4 和 D5)
+const int ledPinYellow = 4;  
+const int ledPinGreen = 5;   
+
+// 设置PWM属性 (频率 5000Hz, 分辨率 8位)
+const int freq = 5000;          
+const int resolution = 8;       
 
 void setup() {
-  // 初始化串口通信
   Serial.begin(9600);
-  // 初始化板载LED引脚为输出模式
-  pinMode(LED_PIN, OUTPUT);
+
+  // 为两个引脚分别附加 PWM 功能
+  ledcAttach(ledPinYellow, freq, resolution);
+  ledcAttach(ledPinGreen, freq, resolution);
 }
 
 void loop() {
-  Serial.println("Hello ESP32!");
-  digitalWrite(LED_PIN, HIGH);   // 点亮LED
-  delay(1000);                   // 等待1秒
-  digitalWrite(LED_PIN, LOW);    // 熄灭LED
-  delay(1000);                   // 等待1秒
+  // 逐渐变亮 (同步)
+  for(int dutyCycle = 0; dutyCycle <= 255; dutyCycle++){   
+    // 同时向两个引脚写入相同的占空比
+    ledcWrite(ledPinYellow, dutyCycle);   
+    ledcWrite(ledPinGreen, dutyCycle);   
+    delay(10);
+  }
+
+  // 逐渐变暗 (同步)
+  for(int dutyCycle = 255; dutyCycle >= 0; dutyCycle--){
+    ledcWrite(ledPinYellow, dutyCycle);   
+    ledcWrite(ledPinGreen, dutyCycle);   
+    delay(10);
+  }
+  
+  Serial.println("Combined breathing cycle completed");
 }
